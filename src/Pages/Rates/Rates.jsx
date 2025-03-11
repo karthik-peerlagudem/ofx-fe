@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import DropDown from '../../Components/DropDown';
 import ProgressBar from '../../Components/ProgressBar';
 import Loader from '../../Components/Loader';
 import Flag from '../../Components/Flag/Flag';
+import CurrencyInput from '../../Components/CurrencyInput';
 
 import { useAnimationFrame } from '../../Hooks/useAnimationFrame';
 import { ReactComponent as Transfer } from '../../Icons/Transfer.svg';
@@ -17,6 +17,8 @@ let countries = CountryData.CountryCodes;
 const Rates = () => {
     const [fromCurrency, setFromCurrency] = useState('AU');
     const [toCurrency, setToCurrency] = useState('US');
+    const [fromAmount, setFromAmount] = useState('');
+    const [toAmount, setToAmount] = useState('');
 
     const [exchangeRate, setExchangeRate] = useState(0.7456);
     const [progression, setProgression] = useState(0);
@@ -50,18 +52,21 @@ const Rates = () => {
 
                 <div className={classes.rowWrapper}>
                     <div>
-                        <DropDown
-                            key={'fromCurrency'}
-                            leftIcon={<Flag code={fromCurrency} />}
-                            label={'From'}
-                            selected={countryToCurrency[fromCurrency]}
-                            options={countries.map(({ code }) => ({
-                                option: countryToCurrency[code],
-                                key: code,
-                                icon: <Flag code={code} />,
-                            }))}
-                            setSelected={(key) => {
-                                setFromCurrency(key);
+                        <CurrencyInput
+                            label="From"
+                            value={fromAmount}
+                            onChange={setFromAmount}
+                            dropdownProps={{
+                                leftIcon: <Flag code={fromCurrency} />,
+                                selected: countryToCurrency[fromCurrency],
+                                options: countries.map(({ code }) => ({
+                                    option: countryToCurrency[code],
+                                    key: code,
+                                    icon: <Flag key={code} code={code} />,
+                                })),
+                                setSelected: (key) => {
+                                    setFromCurrency(key);
+                                },
                             }}
                             style={{ marginRight: '20px' }}
                         />
@@ -69,30 +74,32 @@ const Rates = () => {
 
                     <div className={classes.exchangeWrapper}>
                         <div className={classes.transferIcon}>
-                            <Transfer height={'25px'} />
+                            <Transfer />
                         </div>
-
-                        <div className={classes.rate}>{exchangeRate}</div>
                     </div>
 
                     <div>
-                        <DropDown
-                            key={'toCurrency'}
-                            leftIcon={<Flag code={toCurrency} />}
-                            label={'To'}
-                            selected={countryToCurrency[toCurrency]}
-                            options={countries.map(({ code }) => ({
-                                option: countryToCurrency[code],
-                                key: code,
-                                icon: <Flag code={code} />,
-                            }))}
-                            setSelected={(key) => {
-                                setToCurrency(key);
+                        <CurrencyInput
+                            label="To"
+                            value={toAmount}
+                            onChange={setToAmount}
+                            dropdownProps={{
+                                leftIcon: <Flag code={toCurrency} />,
+                                selected: countryToCurrency[toCurrency],
+                                options: countries.map(({ code }) => ({
+                                    option: countryToCurrency[code],
+                                    key: code,
+                                    icon: <Flag key={code} code={code} />,
+                                })),
+                                setSelected: (key) => {
+                                    setToCurrency(key);
+                                },
                             }}
-                            style={{ marginLeft: '20px' }}
+                            style={{ marginRight: '20px' }}
                         />
                     </div>
                 </div>
+                <div className={classes.rate}>{exchangeRate}</div>
 
                 <ProgressBar
                     progress={progression}

@@ -8,13 +8,16 @@
 }
 .content {
     margin-top: 100px;
+    background-color: #f9fafb;
+    padding: 2rem;
+    border-radius: 5px;
 }
 
 .heading {
-    color: #142557;
+    color: #020817;
     font-weight: 700;
-    font-size: 24px;
-    line-height: 33px;
+    font-size: 1.5rem;
+    line-height: 2.25rem;
     width: 100%;
     margin-bottom: 25px;
 }
@@ -22,17 +25,16 @@
 .rowWrapper {
     display: flex;
     flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: space-between;
 }
 .exchangeWrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    margin: 0px 30px;
+    padding-inline: 1.5rem;
 }
 
 .transferIcon {
-    margin-bottom: 18px;
+    margin-top: 25px;
 }
 .transferIcon > svg > path {
     fill: #142557;
