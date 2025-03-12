@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 import PropTypes from 'prop-types';
 
@@ -40,12 +40,24 @@ const CurrencyInput = ({ label, value, onChange, dropdownProps, style }) => {
         }
     };
 
+    useEffect(() => {
+        if (value) {
+            // Retrigger calculation with current value
+            onChange(value);
+        }
+    }, [dropdownProps.selected]);
+
     return (
         <div className={classes.container} style={style}>
             <label className={classes.label}>{label}</label>
             <div className={classes.inputWrapper}>
                 <div className={classes.dropdown}>
-                    <DropDown {...dropdownProps} />
+                    <DropDown
+                        {...dropdownProps}
+                        setSelected={(key) => {
+                            dropdownProps.setSelected(key);
+                        }}
+                    />
                 </div>
                 <input
                     ref={inputRef}

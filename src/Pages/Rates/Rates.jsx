@@ -20,8 +20,8 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 
 const Rates = () => {
     const [fromCurrency, setFromCurrency] = useState('AU');
-    const [toCurrency, setToCurrency] = useState('US');
-    const [fromAmount, setFromAmount] = useState('0');
+    const [toCurrency, setToCurrency] = useState('IN');
+    const [fromAmount, setFromAmount] = useState('1');
     const [toAmount, setToAmount] = useState('0');
     const [convertedAmounts, setConvertedAmounts] = useState({
         trueAmount: 0,
@@ -65,12 +65,14 @@ const Rates = () => {
         const formValue = parseFloat(value);
 
         setFromAmount(formValue);
+
         if (!isNaN(formValue)) {
             const amounts = calculateBidirectionalConversion(
                 formValue,
                 rate ? rate : exchangeRate,
                 true
             );
+
             setConvertedAmounts(amounts);
             setToAmount(amounts.markedUpAmount.toFixed(2));
         } else {
@@ -99,13 +101,29 @@ const Rates = () => {
         }
     };
 
+    const recurringApiCallOnly = async () => {
+        if (!loading) {
+            try {
+                const rate = await fetchLiveRate(
+                    countryToCurrency[fromCurrency],
+                    countryToCurrency[toCurrency]
+                );
+                if (rate) {
+                    setExchangeRate(rate);
+                }
+            } catch (error) {
+                console.error('Background rate refresh failed:', error);
+            }
+        }
+    };
+
     // Demo progress bar moving :)
     useAnimationFrame(!loading, (deltaTime) => {
         setProgression((prevState) => {
             if (prevState > 0.998) {
-                // Only fetch in development
+                // repeated call only dev, to avoid the spam in prod
                 if (isDevelopment) {
-                    fetchData();
+                    recurringApiCallOnly();
                 }
                 return 0;
             }
