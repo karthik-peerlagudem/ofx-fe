@@ -55,10 +55,12 @@ const Rates = () => {
     };
 
     const handleFromAmountChange = (value, rate = 0) => {
-        setFromAmount(value);
-        if (value) {
+        const formValue = Number(value);
+
+        setFromAmount(formValue);
+        if (formValue) {
             const amounts = calculateBidirectionalConversion(
-                value,
+                formValue,
                 rate ? rate : exchangeRate,
                 true
             );
@@ -71,10 +73,12 @@ const Rates = () => {
     };
 
     const handleToAmountChange = (value) => {
-        setToAmount(value);
-        if (value) {
+        const toValue = Number(value);
+
+        setToAmount(toValue);
+        if (toValue) {
             const amounts = calculateBidirectionalConversion(
-                value,
+                toValue,
                 exchangeRate,
                 false
             );
@@ -112,7 +116,7 @@ const Rates = () => {
                     <div>
                         <CurrencyInput
                             label="From"
-                            value={fromAmount}
+                            value={fromAmount.toString()}
                             onChange={handleFromAmountChange}
                             dropdownProps={{
                                 leftIcon: <Flag code={fromCurrency} />,
@@ -139,7 +143,7 @@ const Rates = () => {
                     <div>
                         <CurrencyInput
                             label="To"
-                            value={toAmount}
+                            value={toAmount.toString()}
                             onChange={handleToAmountChange}
                             dropdownProps={{
                                 leftIcon: <Flag code={toCurrency} />,

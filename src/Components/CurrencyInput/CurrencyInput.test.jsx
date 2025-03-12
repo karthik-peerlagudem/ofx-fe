@@ -32,6 +32,6 @@ describe('CurrencyInput', () => {
         const input = screen.getByPlaceholderText('0');
         fireEvent.change(input, { target: { value: '123' } });
 
-        expect(mockProps.onChange).toHaveBeenCalledWith(123);
+        expect(mockProps.onChange).toHaveBeenCalledWith('123');
     });
 });

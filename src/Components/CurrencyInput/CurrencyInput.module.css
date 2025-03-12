@@ -25,6 +25,8 @@
     min-width: 120px;
     color: #2d3c4e;
     text-align: right;
+    direction: rtl;
+    unicode-bidi: plaintext;
 }
 
 .input::-webkit-outer-spin-button,
