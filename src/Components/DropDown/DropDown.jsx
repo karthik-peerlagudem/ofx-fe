@@ -75,7 +75,7 @@ const DropDown = (props) => {
             {open ? (
                 <ul className={classes.menu}>
                     {props.options.map(({ option, key, icon }) => (
-                        <li className={classes['menu-item']}>
+                        <li key={key} className={classes['menu-item']}>
                             <button
                                 className={classes.button}
                                 onClick={() => handleSelect(key)}
