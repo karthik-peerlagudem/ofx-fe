@@ -39,3 +39,14 @@
     min-width: 120px;
     border-right: 1px solid #ccc;
 }
+
+.inputError {
+    border-color: #ef4444;
+}
+
+.errorMessage {
+    color: #ef4444;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}

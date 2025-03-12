@@ -21,12 +21,13 @@ const isDevelopment = process.env.NODE_ENV === 'development';
 const Rates = () => {
     const [fromCurrency, setFromCurrency] = useState('AU');
     const [toCurrency, setToCurrency] = useState('US');
-    const [fromAmount, setFromAmount] = useState('');
-    const [toAmount, setToAmount] = useState('');
+    const [fromAmount, setFromAmount] = useState('0');
+    const [toAmount, setToAmount] = useState('0');
     const [convertedAmounts, setConvertedAmounts] = useState({
         trueAmount: 0,
         markedUpAmount: 0,
     });
+
     const [error, setError] = useState(null);
 
     const [exchangeRate, setExchangeRate] = useState(0.75);
@@ -45,7 +46,7 @@ const Rates = () => {
                 if (rate) {
                     setError(null);
                     setExchangeRate(rate);
-                    handleFromAmountChange(fromAmount, rate);
+                    handleFromAmountChange(fromAmount.toString(), rate);
                 }
             } catch (error) {
                 setError(`${error}, please try again later`);
@@ -56,10 +57,15 @@ const Rates = () => {
     };
 
     const handleFromAmountChange = (value, rate = 0) => {
-        const formValue = Number(value);
+        if (value && value.endsWith('.')) {
+            setFromAmount(value);
+            return;
+        }
+
+        const formValue = parseFloat(value);
 
         setFromAmount(formValue);
-        if (formValue) {
+        if (!isNaN(formValue)) {
             const amounts = calculateBidirectionalConversion(
                 formValue,
                 rate ? rate : exchangeRate,
@@ -74,10 +80,12 @@ const Rates = () => {
     };
 
     const handleToAmountChange = (value) => {
-        const toValue = Number(value);
+        const toValue = value.endsWith('.')
+            ? parseFloat(value + '0')
+            : parseFloat(value);
 
         setToAmount(toValue);
-        if (toValue) {
+        if (!isNaN(toValue)) {
             const amounts = calculateBidirectionalConversion(
                 toValue,
                 exchangeRate,
