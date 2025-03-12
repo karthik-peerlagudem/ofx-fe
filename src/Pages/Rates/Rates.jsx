@@ -13,6 +13,7 @@ import classes from './Rates.module.css';
 import CountryData from '../../Libs/Countries.json';
 import countryToCurrency from '../../Libs/CountryCurrency.json';
 import { calculateBidirectionalConversion } from '../../Libs/util.js';
+import { fetchLiveRate } from '../../Services/liveRateService.js';
 
 let countries = CountryData.CountryCodes;
 
@@ -25,8 +26,9 @@ const Rates = () => {
         trueAmount: 0,
         markedUpAmount: 0,
     });
+    const [error, setError] = useState(null);
 
-    const [exchangeRate, setExchangeRate] = useState(50);
+    const [exchangeRate, setExchangeRate] = useState(0.75);
     const [progression, setProgression] = useState(0);
     const [loading, setLoading] = useState(false);
 
@@ -34,18 +36,30 @@ const Rates = () => {
         if (!loading) {
             setLoading(true);
 
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-
-            setLoading(false);
+            try {
+                const rate = await fetchLiveRate(
+                    countryToCurrency[fromCurrency],
+                    countryToCurrency[toCurrency]
+                );
+                if (rate) {
+                    setError(null);
+                    setExchangeRate(rate);
+                    handleFromAmountChange(fromAmount, rate);
+                }
+            } catch (error) {
+                setError(`${error}, please try again later`);
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
-    const handleFromAmountChange = (value) => {
+    const handleFromAmountChange = (value, rate = 0) => {
         setFromAmount(value);
         if (value) {
             const amounts = calculateBidirectionalConversion(
                 value,
-                exchangeRate,
+                rate ? rate : exchangeRate,
                 true
             );
             setConvertedAmounts(amounts);
@@ -76,12 +90,18 @@ const Rates = () => {
     useAnimationFrame(!loading, (deltaTime) => {
         setProgression((prevState) => {
             if (prevState > 0.998) {
-                fetchData();
+                // fetchData();
                 return 0;
             }
             return (prevState + deltaTime * 0.0001) % 1;
         });
     });
+
+    // Initial fetch on component mount
+    useEffect(() => {
+        fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [fromCurrency, toCurrency]);
 
     return (
         <div className={classes.container}>
@@ -137,28 +157,43 @@ const Rates = () => {
                         />
                     </div>
                 </div>
-                <div className={classes.rate}>
-                    Exchange Rate: {exchangeRate.toFixed(2)}
-                </div>
-                <div className={classes.conversionResults}>
-                    <span>
-                        Market Rate: {convertedAmounts.trueAmount.toFixed(2)}
-                    </span>
-                    <span>
-                        OFX Rate: {convertedAmounts.markedUpAmount.toFixed(2)}
-                    </span>
-                </div>
 
-                <ProgressBar
-                    progress={progression}
-                    animationClass={loading ? classes.slow : ''}
-                    style={{ marginTop: '20px' }}
-                />
+                {error ? (
+                    <>
+                        <div className={classes.errorContainer}>
+                            <span className={classes.errorMessage}>
+                                {error}
+                            </span>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className={classes.rate}>
+                            Exchange Rate: {exchangeRate}
+                        </div>
+                        <div className={classes.conversionResults}>
+                            <span>
+                                Market Rate:{' '}
+                                {convertedAmounts.trueAmount.toFixed(2)}
+                            </span>
+                            <span>
+                                OFX Rate:{' '}
+                                {convertedAmounts.markedUpAmount.toFixed(2)}
+                            </span>
+                        </div>
 
-                {loading && (
-                    <div className={classes.loaderWrapper}>
-                        <Loader width={'25px'} height={'25px'} />
-                    </div>
+                        <ProgressBar
+                            progress={progression}
+                            animationClass={loading ? classes.slow : ''}
+                            style={{ marginTop: '20px' }}
+                        />
+
+                        {loading && (
+                            <div className={classes.loaderWrapper}>
+                                <Loader width={'25px'} height={'25px'} />
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </div>

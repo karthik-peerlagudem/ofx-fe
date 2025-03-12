@@ -65,3 +65,20 @@
     gap: 2rem;
     margin-top: 1.5rem;
 }
+
+.errorContainer {
+    background-color: #fee2e2;
+    border: 1px solid #ef4444;
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.errorMessage {
+    color: #dc2626;
+    font-size: 14px;
+    font-weight: 500;
+}

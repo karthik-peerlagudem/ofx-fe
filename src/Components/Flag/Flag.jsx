@@ -1,5 +1,7 @@
 import classes from './Flag.module.css';
 
+import PropTypes from 'prop-types';
+
 const Flag = ({ code }) => (
     <img
         alt={code || ''}
@@ -9,5 +11,9 @@ const Flag = ({ code }) => (
         data-testid={`flag-${code}`}
     />
 );
+
+Flag.propTypes = {
+    code: PropTypes.string,
+};
 
 export default Flag;
