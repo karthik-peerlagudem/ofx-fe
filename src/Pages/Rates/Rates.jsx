@@ -16,6 +16,7 @@ import { calculateBidirectionalConversion } from '../../Libs/util.js';
 import { fetchLiveRate } from '../../Services/liveRateService.js';
 
 let countries = CountryData.CountryCodes;
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 const Rates = () => {
     const [fromCurrency, setFromCurrency] = useState('AU');
@@ -94,7 +95,10 @@ const Rates = () => {
     useAnimationFrame(!loading, (deltaTime) => {
         setProgression((prevState) => {
             if (prevState > 0.998) {
-                // fetchData();
+                // Only fetch in development
+                if (isDevelopment) {
+                    fetchData();
+                }
                 return 0;
             }
             return (prevState + deltaTime * 0.0001) % 1;
