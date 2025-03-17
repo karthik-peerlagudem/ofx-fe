@@ -54,10 +54,14 @@ describe('DropDown Component', () => {
         fireEvent.click(dropdownButton);
 
         // get the usd <li>
-        const menuItems = screen.getAllByRole('listitem');
+        const menuItems = screen.getAllByRole('option');
         const listItemUSD = menuItems.find((item) =>
-            item.textContent.includes('USD')
+            item?.textContent?.includes('USD')
         );
+
+        if (!listItemUSD) {
+            throw new Error('USD list item not found');
+        }
 
         const currencyButtonUSD = within(listItemUSD).getByRole('button');
         fireEvent.click(currencyButtonUSD);

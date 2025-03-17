@@ -1,42 +1,55 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useAnimationFrame } from '../../Hooks/useAnimationFrame.tsx';
 
-import ProgressBar from '../../Components/ProgressBar';
-import Loader from '../../Components/Loader';
-import Flag from '../../Components/Flag/Flag';
-import CurrencyInput from '../../Components/CurrencyInput';
+import ProgressBar from '../../Components/ProgressBar/ProgressBar.tsx';
+import Loader from '../../Components/Loader/Loader.tsx';
+import Flag from '../../Components/Flag/Flag.tsx';
+import CurrencyInput from '../../Components/CurrencyInput/CurrencyInput.tsx';
 
-import { useAnimationFrame } from '../../Hooks/useAnimationFrame';
 import { ReactComponent as Transfer } from '../../Icons/Transfer.svg';
 
 import classes from './Rates.module.css';
 
 import CountryData from '../../Libs/Countries.json';
 import countryToCurrency from '../../Libs/CountryCurrency.json';
-import { calculateBidirectionalConversion } from '../../Libs/util.js';
-import { fetchLiveRate } from '../../Services/liveRateService.js';
+import { calculateBidirectionalConversion } from '../../Libs/util.ts';
+import { fetchLiveRate } from '../../Services/liveRateService.ts';
 
 let countries = CountryData.CountryCodes;
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-const Rates = () => {
-    const [fromCurrency, setFromCurrency] = useState('AU');
-    const [toCurrency, setToCurrency] = useState('IN');
-    const [fromAmount, setFromAmount] = useState('1');
-    const [toAmount, setToAmount] = useState('0');
-    const [convertedAmounts, setConvertedAmounts] = useState({
-        trueAmount: 0,
-        markedUpAmount: 0,
-    });
+interface ConversionAmounts {
+    trueAmount: number;
+    markedUpAmount: number;
+}
 
-    const [error, setError] = useState(null);
+export default function Rates() {
+    const [fromCurrency, setFromCurrency] = useState<string>('AU');
+    const [toCurrency, setToCurrency] = useState<string>('IN');
+    const [fromAmount, setFromAmount] = useState<string | number>('1');
+    const [toAmount, setToAmount] = useState<string | number>('0');
+    const [convertedAmounts, setConvertedAmounts] = useState<ConversionAmounts>(
+        {
+            trueAmount: 0,
+            markedUpAmount: 0,
+        }
+    );
 
-    const [exchangeRate, setExchangeRate] = useState(0.75);
-    const [progression, setProgression] = useState(0);
-    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const fetchData = async () => {
+    const [exchangeRate, setExchangeRate] = useState<number>(0.75);
+    const [progression, setProgression] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isProgressPaused, setIsProgressPaused] = useState<boolean>(false);
+
+    const hasRecurringApiCalled = useRef(false);
+    const hasFetchDataApiCalled = useRef(false);
+
+    const fetchData = async (): Promise<void> => {
         if (!loading) {
             setLoading(true);
+            // pause the progress bar
+            setIsProgressPaused(true);
 
             try {
                 const rate = await fetchLiveRate(
@@ -52,11 +65,13 @@ const Rates = () => {
                 setError(`${error}, please try again later`);
             } finally {
                 setLoading(false);
+                // resume the progress bar
+                setIsProgressPaused(false);
             }
         }
     };
 
-    const handleFromAmountChange = (value, rate = 0) => {
+    const handleFromAmountChange = (value: string, rate: number = 0): void => {
         if (value && value.endsWith('.')) {
             setFromAmount(value);
             return;
@@ -81,7 +96,7 @@ const Rates = () => {
         }
     };
 
-    const handleToAmountChange = (value) => {
+    const handleToAmountChange = (value: string): void => {
         const toValue = value.endsWith('.')
             ? parseFloat(value + '0')
             : parseFloat(value);
@@ -101,9 +116,11 @@ const Rates = () => {
         }
     };
 
-    const recurringApiCallOnly = async () => {
+    const recurringApiCallOnly = async (): Promise<void> => {
         if (!loading) {
+            setLoading(true);
             try {
+                setIsProgressPaused(true);
                 const rate = await fetchLiveRate(
                     countryToCurrency[fromCurrency],
                     countryToCurrency[toCurrency]
@@ -111,29 +128,48 @@ const Rates = () => {
                 if (rate) {
                     setExchangeRate(rate);
                 }
+                return;
             } catch (error) {
-                console.error('Background rate refresh failed:', error);
+                console.error('Background API call failed');
+            } finally {
+                setLoading(false);
+                setIsProgressPaused(false);
             }
         }
     };
 
     // Demo progress bar moving :)
-    useAnimationFrame(!loading, (deltaTime) => {
+    useAnimationFrame(!loading && !isProgressPaused, (deltaTime) => {
         setProgression((prevState) => {
-            if (prevState > 0.998) {
-                // repeated call only dev, to avoid the spam in prod
+            const newProgress = prevState + deltaTime * 0.0001;
+
+            if (newProgress >= 1) {
+                // Make API call
+                // Only call if not already in progress
                 if (isDevelopment) {
-                    recurringApiCallOnly();
+                    if (!hasRecurringApiCalled.current) {
+                        hasRecurringApiCalled.current = true;
+                        recurringApiCallOnly().finally(() => {
+                            hasRecurringApiCalled.current = false;
+                        });
+                    }
                 }
+                // Reset progress
                 return 0;
             }
-            return (prevState + deltaTime * 0.0001) % 1;
+
+            return newProgress;
         });
     });
 
     // Initial fetch on component mount
     useEffect(() => {
-        fetchData();
+        if (!hasFetchDataApiCalled.current) {
+            hasFetchDataApiCalled.current = true;
+            fetchData().finally(() => {
+                hasFetchDataApiCalled.current = false;
+            });
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [fromCurrency, toCurrency]);
 
@@ -221,17 +257,14 @@ const Rates = () => {
                             animationClass={loading ? classes.slow : ''}
                             style={{ marginTop: '20px' }}
                         />
-
-                        {loading && (
-                            <div className={classes.loaderWrapper}>
-                                <Loader width={'25px'} height={'25px'} />
-                            </div>
-                        )}
                     </>
+                )}
+                {loading && (
+                    <div className={classes.loaderWrapper}>
+                        <Loader width={'25px'} height={'25px'} />
+                    </div>
                 )}
             </div>
         </div>
     );
-};
-
-export default Rates;
+}

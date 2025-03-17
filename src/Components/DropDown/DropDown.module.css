@@ -55,7 +55,7 @@
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
     width: 100%;
     top: 93%;
-    max-height: 150px;
+    max-height: 220px;
     overflow-y: auto;
     z-index: 1000;
 }
@@ -66,18 +66,12 @@
 
 .menu > li {
     margin: 0;
-    background-color: white;
 }
-.menu > li:hover {
-    background: rgba(85, 127, 233, 0.1);
-    color: #457ced;
-    cursor: pointer;
-}
+
 .menu > li > button {
     width: 100%;
     height: 100%;
     text-align: left;
-
     background: none;
     color: inherit;
     border: none;
@@ -87,4 +81,61 @@
     cursor: pointer;
     color: #0b1a3f;
     font-size: 16px;
+}
+
+.menuContainer {
+    position: absolute;
+    width: 100%;
+    background: white;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+    margin-top: 4px;
+    z-index: 1000;
+}
+
+.searchInput {
+    width: 90%;
+    font-size: 16px;
+    margin: 1px;
+    padding: 12px 8px;
+    border: none;
+    border-bottom: 1px solid #e5e5e5;
+    outline: none;
+}
+
+.searchInput:focus {
+    border-bottom: 1px solid #6d7587;
+}
+
+.no-results {
+    padding: 12px;
+    text-align: center;
+    color: #666;
+}
+
+.menu-item {
+    list-style: none;
+}
+
+.menu-item button {
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.focused {
+    background-color: #f5f7f9 !important;
+}
+
+.focused button {
+    background-color: #f5f7f9;
+}
+
+.menu-item:hover {
+    background-color: #f5f7f9;
 }

@@ -1,6 +1,11 @@
 import './Header.css';
+import React from 'react';
 
-const Header = (props) => {
+interface HeaderProps {
+    title: string;
+}
+
+const Header: React.FC<HeaderProps> = (props) => {
     return (
         <header>
             <div className={`header-wrap`}>

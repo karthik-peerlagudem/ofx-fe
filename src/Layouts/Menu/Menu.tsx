@@ -1,19 +1,28 @@
+import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { ReactComponent as Transfer } from '../../Icons/Transfer.svg';
 
 import classes from './Menu.module.css';
 
-const Menu = () => {
+const Menu: React.FC = () => {
     const { pathname } = useLocation();
 
     return (
         <span className={classes.menu}>
-            <div className={`${classes.wrapper} ${classes.expanded} ${classes.desktop}`}>
-                <div className={`${classes.middleSection} ${classes.middleSectionExpanded}`}>
+            <div
+                className={`${classes.wrapper} ${classes.expanded} ${classes.desktop}`}
+            >
+                <div
+                    className={`${classes.middleSection} ${classes.middleSectionExpanded}`}
+                >
                     <div className={classes.topSection}>
                         <NavLink to="/dashboard" className={classes.logo}>
-                            <svg viewBox="0 0 90 25" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg
+                                viewBox="0 0 90 25"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
                                 <path
                                     className={classes.icon}
                                     d="M5.68769 0C8.5133 0 10.6826 0.501319 12.1957 1.50396C13.7088 2.48836 14.4653 4.11081 14.4653 6.3713C14.4653 8.65003 13.6997 10.2998 12.1684 11.3207C10.6371 12.3233 8.4495 12.8246 5.60566 12.8246H4.51577C4.3777 12.8246 4.26577 12.9366 4.26577 13.0746V18.9186C4.26577 19.0567 4.15384 19.1686 4.01577 19.1686H0.25C0.111929 19.1686 0 19.0567 0 18.9186V7.4044C0 7.25759 0.125902 7.14238 0.272132 7.15538L4.40719 7.52289C4.53618 7.53436 4.63506 7.64241 4.63506 7.7719L4.63511 9.35113C4.63511 9.50382 4.68973 9.65147 4.7891 9.7674C5.019 10.0356 5.42281 10.0667 5.69103 9.83678L10.4649 6.75002C10.8043 6.45916 10.7332 6.00862 10.4649 5.77872L5.69103 2.69194C5.5751 2.59257 5.42744 2.53796 5.27475 2.53796C4.92149 2.53796 4.63511 2.82433 4.63511 3.1776L4.63506 4.75967C4.63506 4.88754 4.53856 4.9948 4.41139 5.00827L0.276333 5.44627C0.128669 5.46191 0 5.34615 0 5.19766V0.697945C0 0.57842 0.0845497 0.475464 0.202059 0.453606C1.07203 0.29178 1.98909 0.177038 2.95322 0.109379C3.99232 0.0364596 4.90381 0 5.68769 0Z"
@@ -36,10 +45,15 @@ const Menu = () => {
 
                     <nav>
                         <>
-                            <div className={`${classes.section} ${classes.second}`}>
+                            <div
+                                className={`${classes.section} ${classes.second}`}
+                            >
                                 <NavLink
                                     className={`${classes.pageLink} ${
-                                        pathname.includes('/rates') || pathname === '/' ? classes.active : ''
+                                        pathname.includes('/rates') ||
+                                        pathname === '/'
+                                            ? classes.active
+                                            : ''
                                     }`}
                                     data-toggle="tooltip"
                                     data-placement="bottom"
@@ -47,7 +61,9 @@ const Menu = () => {
                                     to="/rates"
                                 >
                                     <Transfer />
-                                    <span className={classes.pageLinkText}>Rates</span>
+                                    <span className={classes.pageLinkText}>
+                                        Rates
+                                    </span>
                                 </NavLink>
                             </div>
                         </>

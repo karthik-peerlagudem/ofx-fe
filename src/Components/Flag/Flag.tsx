@@ -1,8 +1,11 @@
+import React from 'react';
 import classes from './Flag.module.css';
 
-import PropTypes from 'prop-types';
+interface FlagProps {
+    code: string;
+}
 
-const Flag = ({ code }) => (
+const Flag: React.FC<FlagProps> = ({ code }) => (
     <img
         alt={code || ''}
         src={`/img/flags/${code || ''}.svg`}
@@ -11,9 +14,5 @@ const Flag = ({ code }) => (
         data-testid={`flag-${code}`}
     />
 );
-
-Flag.propTypes = {
-    code: PropTypes.string,
-};
 
 export default Flag;

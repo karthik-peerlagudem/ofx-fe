@@ -1,11 +1,16 @@
-import PropTypes from 'prop-types';
+import React from 'react';
 
-import Header from './Header';
-import Menu from './Menu';
+import Header from './Header/Header.tsx';
+import Menu from './Menu/Menu.tsx';
 
 import './MainLayout.css';
 
-const MainLayout = (props) => {
+interface MainLayoutProps {
+    title: string;
+    children: React.ReactNode;
+}
+
+const MainLayout = (props: MainLayoutProps) => {
     return (
         <div id="container">
             <Menu />
@@ -15,11 +20,6 @@ const MainLayout = (props) => {
             </div>
         </div>
     );
-};
-
-MainLayout.propTypes = {
-    title: PropTypes.string,
-    children: PropTypes.object,
 };
 
 export default MainLayout;

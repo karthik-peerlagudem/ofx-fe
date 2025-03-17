@@ -1,16 +1,29 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-import PropTypes from 'prop-types';
-
-import DropDown from '../DropDown';
+import DropDown from '../DropDown/DropDown.tsx';
+import { DropDownProps } from '../DropDown/DropDown.tsx';
 
 import classes from './CurrencyInput.module.css';
 
-const CurrencyInput = ({ label, value, onChange, dropdownProps, style }) => {
-    const inputRef = useRef(null);
+interface CurrencyInputProps {
+    label?: string;
+    value: string;
+    onChange: (value: string) => void;
+    dropdownProps: DropDownProps;
+    style?: React.CSSProperties;
+}
+
+const CurrencyInput: React.FC<CurrencyInputProps> = ({
+    label,
+    value,
+    onChange,
+    dropdownProps,
+    style,
+}) => {
+    const inputRef = useRef<HTMLInputElement>(null);
     const [error, setError] = useState('');
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
         const numberPattern = /^\d*\.?\d*$/;
 
@@ -33,9 +46,12 @@ const CurrencyInput = ({ label, value, onChange, dropdownProps, style }) => {
     const moveCursorToEnd = () => {
         if (inputRef.current) {
             setTimeout(() => {
-                inputRef.current.selectionStart =
+                if (inputRef.current) {
+                    inputRef.current.selectionStart =
+                        inputRef.current.value.length;
                     inputRef.current.selectionEnd =
                         inputRef.current.value.length;
+                }
             }, 0);
         }
     };
@@ -45,6 +61,7 @@ const CurrencyInput = ({ label, value, onChange, dropdownProps, style }) => {
             // Retrigger calculation with current value
             onChange(value);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dropdownProps.selected]);
 
     return (
@@ -78,14 +95,6 @@ const CurrencyInput = ({ label, value, onChange, dropdownProps, style }) => {
             )}
         </div>
     );
-};
-
-CurrencyInput.propTypes = {
-    label: PropTypes.string,
-    value: PropTypes.string,
-    onChange: PropTypes.func,
-    dropdownProps: PropTypes.object,
-    style: PropTypes.object,
 };
 
 export default CurrencyInput;

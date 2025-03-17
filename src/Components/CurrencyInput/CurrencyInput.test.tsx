@@ -1,4 +1,7 @@
+import React from 'react';
+
 import { render, screen, fireEvent } from '@testing-library/react';
+
 import CurrencyInput from './CurrencyInput';
 import Flag from '../Flag/Flag';
 
